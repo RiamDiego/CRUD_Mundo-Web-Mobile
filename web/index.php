@@ -15,13 +15,13 @@
     <title>Login Crud Mundo</title>
 </head>
 <body class="text-center">
-    <form class="form-signin" method="post">
+    <form class="form-signin" action="back/validar.php" method="post">
       <i class="bi bi-person"></i>
       <h1 class="h3 mb-3 font-weight-normal">Bem vindo ao Crud Mundo</h1>
       <label for="inputEmail" class="sr-only">Email</label>
-      <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
-      <label for="inputPassword" class="sr-only">Senha</label>
-      <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+      <input type="email" id="inputEmail" name="email" class="form-control" placeholder="Email" required autofocus>
+      <label for="inputPassword" name="senha "class="sr-only">Senha</label>
+      <input type="password" id="inputPassword" class="form-control" placeholder="Senha" required>
       <input class="btn btn-lg btn-primary btn-block" type="submit">login</button>
     </form>
   </body>
