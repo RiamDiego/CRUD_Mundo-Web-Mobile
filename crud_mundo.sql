@@ -33,7 +33,6 @@ create table usuarios(
  insert into usuarios_pedrosa (email, usuario, senha) values
 ("adm@gmail.com", "Admin1", sha1("1234"));
 
-
 -- Continentes
 insert into continentes (nome) values
 ("Europa"),
