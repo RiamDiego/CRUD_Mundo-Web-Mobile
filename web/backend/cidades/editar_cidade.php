@@ -1,6 +1,6 @@
 <?php
 // backend/cidades/editar_cidade.php
-require_once '/../conexao.php';
+require_once '../conexao.php';
 header('Content-Type: application/json; charset=utf-8');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); echo json_encode(['error'=>'Metodo não permitido']); exit; }

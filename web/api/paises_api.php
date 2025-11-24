@@ -1,17 +1,26 @@
 <?php
 // api/paises_api.php
-// Proxy simples para REST Countries (v3.1) — NÃO coloca chaves aqui (esta API é pública).
 header('Content-Type: application/json; charset=utf-8');
 
-if (!isset($_GET['name'])) {
+// 1) Se veio sigla, usa ela
+if (isset($_GET['sigla']) && $_GET['sigla'] !== '') {
+    $sigla = strtoupper(trim($_GET['sigla']));
+    // REST Countries aceita ISO3 em /alpha/{code}
+    $url = "https://restcountries.com/v3.1/alpha/{$sigla}";
+}
+// 2) Caso contrário, tenta por name
+elseif (isset($_GET['name']) && $_GET['name'] !== '') {
+    $name = urlencode($_GET['name']);
+    $url = "https://restcountries.com/v3.1/name/{$name}";
+}
+// 3) Nem sigla nem nome → erro
+else {
     http_response_code(400);
-    echo json_encode(['error'=>'name param required']);
+    echo json_encode(['error' => 'sigla or name param required']);
     exit;
 }
 
-$name = urlencode($_GET['name']);
-$url = "https://restcountries.com/v3.1/name/{$name}";
-
+// chamada cURL
 $ch = curl_init($url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_TIMEOUT, 8);

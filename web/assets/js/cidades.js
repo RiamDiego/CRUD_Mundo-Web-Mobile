@@ -55,9 +55,9 @@ function initCidades(idPais) {
             <td>${escapeHtml(c.nome)}</td>
             <td>${c.populacao || 0}</td>
             <td>
-              <button class="btn btn-sm btn-info btn-edit" data-id="${c.id_cidade}">Editar</button>
-              <button class="btn btn-sm btn-danger btn-delete" data-id="${c.id_cidade}">Excluir</button>
-              <button class="btn btn-sm btn-secondary btn-clima" data-nome="${escapeHtml(c.nome)}">Clima</button>
+              <button type="button" class="btn btn-sm btn-info btn-edit" data-id="${c.id_cidade}">Editar</button>
+              <button type="button" class="btn btn-sm btn-danger btn-delete" data-id="${c.id_cidade}">Excluir</button>
+              <button type="button" class="btn btn-sm btn-secondary btn-clima" data-nome="${escapeHtml(c.nome)}">Clima</button>
             </td>
           `;
           tableBody.appendChild(tr);
@@ -109,24 +109,80 @@ function initCidades(idPais) {
           else alert(res.error || 'Erro ao excluir cidade');
         })
         .catch(()=> alert('Erro de rede ao excluir'));
-    } else if (e.target.matches('.btn-edit')) {
-      const id = e.target.dataset.id;
-      fetch(`../backend/cidades/get_cidade.php?id=${id}`)
-        .then(r => r.json())
-        .then(c => {
-          if (c.error) { alert('Cidade não encontrada'); return; }
-          document.getElementById('id_cidade').value = c.id_cidade;
-          document.getElementById('cidade_nome').value = c.nome;
-          document.getElementById('cidade_pop').value = c.populacao;
-          document.getElementById('form_id_pais').value = c.id_pais;
-          modal.find('.modal-title').text('Editar Cidade');
-          modal.modal('show');
-        })
-        .catch(()=> alert('Erro ao buscar cidade'));
-    } else if (e.target.matches('.btn-clima')) {
-      const nomeCidade = e.target.getAttribute('data-nome');
-      window.open(`../api/clima.php?city=${encodeURIComponent(nomeCidade)}`, '_blank');
+    // Handler do clima — versão robusta (usa closest para capturar cliques em ícone interno)
+    } else {
+      // procura botão clima a partir do elemento clicado
+      const klimBtn = e.target.closest && e.target.closest('.btn-clima');
+      if (klimBtn) {
+        e.preventDefault();
+
+        // pega nome da cidade
+        const nomeCidadeRaw = klimBtn.getAttribute('data-nome') || '';
+        const nomeCidade = nomeCidadeRaw.trim();
+        if (!nomeCidade) {
+          alert('Nome da cidade desconhecido.');
+          return;
+        }
+
+        const modalBody = document.getElementById('modalClimaBody');
+
+        // abrir modal com feedback
+        $('#modalClima').modal('show');
+        modalBody.innerHTML = '<div class="text-center py-3">Buscando clima... <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div></div>';
+
+        const url = `../api/clima.php?city=${encodeURIComponent(nomeCidade)}`;
+
+        fetch(url)
+          .then(response => {
+            // guardamos info do http status para mensagens
+            return response.text().then(txt => ({ ok: response.ok, status: response.status, txt }));
+          })
+          .then(({ ok, status, txt }) => {
+            let json;
+            try {
+              json = JSON.parse(txt);
+            } catch (err) {
+              console.error('Resposta inválida da API de clima:', txt);
+              modalBody.innerHTML = '<div class="alert alert-danger">Resposta inválida da API de clima.</div>';
+              return;
+            }
+
+            // normaliza cod/erro
+            const cod = json.cod !== undefined ? Number(json.cod) : (ok ? 200 : status);
+            if (cod !== 200) {
+              const msg = json.message || 'Erro ao obter clima';
+              modalBody.innerHTML = `<div class="alert alert-warning">${escapeHtml(String(msg))}</div>`;
+              return;
+            }
+
+            // extrair campos com fallback seguro
+            const temp = json.main && json.main.temp !== undefined ? json.main.temp : '—';
+            const feels = json.main && json.main.feels_like !== undefined ? json.main.feels_like : '—';
+            const humidity = json.main && json.main.humidity !== undefined ? json.main.humidity : '—';
+            const desc = json.weather && json.weather[0] && json.weather[0].description ? json.weather[0].description : '';
+            const icon = json.weather && json.weather[0] && json.weather[0].icon
+              ? `https://openweathermap.org/img/wn/${json.weather[0].icon}@2x.png`
+              : '';
+
+            modalBody.innerHTML = `
+              <div class="d-flex align-items-center">
+                ${icon ? `<img src="${icon}" alt="ícone" style="width:64px; height:64px; margin-right:12px;">` : ''}
+                <div>
+                  <h5 class="mb-1">${escapeHtml(nomeCidade)}</h5>
+                  <p class="mb-1"><strong>${escapeHtml(String(temp))}°C</strong> (sensação ${escapeHtml(String(feels))}°C)</p>
+                  <p class="mb-1 text-capitalize">${escapeHtml(desc)}</p>
+                  <small>Umidade: ${escapeHtml(String(humidity))}%</small>
+                </div>
+              </div>
+            `;
+          })
+          .catch(err => {
+            console.error('Erro ao buscar clima:', err);
+            modalBody.innerHTML = '<div class="alert alert-danger">Erro ao obter clima. Tente novamente.</div>';
+          });
+      }
     }
+
   });
 
   // Inicialização

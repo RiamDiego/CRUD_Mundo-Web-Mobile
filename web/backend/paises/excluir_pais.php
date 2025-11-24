@@ -1,6 +1,6 @@
 <?php
 // backend/paises/excluir_pais.php
-require_once '/../conexao.php';
+require_once '../conexao.php';
 header('Content-Type: application/json; charset=utf-8');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

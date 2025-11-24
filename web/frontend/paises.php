@@ -56,9 +56,17 @@ if (!isset($_SESSION['user_id'])) {
             <input id="nome" name="nome" class="form-control" required>
           </div>
           <div class="form-group">
-            <label for="id_cont">ID do Continente</label>
-            <input id="id_cont" name="id_cont" type="number" min="1" class="form-control" required>
-            <small class="form-text text-muted">Use o ID do continente (ex.: 1)</small>
+            <label for="sigla">Sigla</label>
+            <input id="sigla" name="sigla" class="form-control" maxlength="3" placeholder="Ex.: BRA">
+            <small class="form-text text-muted">Código ISO-3 do país.</small>
+          </div>
+          <div class="form-group">
+            <label for="id_cont">Continente</label>
+            <select id="id_cont" name="id_cont" class="form-control" required>
+              <option value="">-- Selecionar continente --</option>
+              <!-- Opções serão inseridas dinamicamente via JS ou servidor -->
+            </select>
+            <small class="form-text text-muted">Selecione o continente do país.</small>
           </div>
           <div class="form-group">
             <label for="populacao">População</label>
@@ -67,6 +75,11 @@ if (!isset($_SESSION['user_id'])) {
           <div class="form-group">
             <label for="idioma">Idioma</label>
             <input id="idioma" name="idioma" class="form-control">
+          </div>
+          <!-- botão para buscar dados oficiais (REST Countries) -->
+          <div class="form-group">
+            <button type="button" id="btnOfficialData" class="btn btn-outline-info btn-sm">Dados oficiais</button>
+            <div id="officialData" class="mt-2"></div>
           </div>
         </div>
         <div class="modal-footer">

@@ -341,6 +341,52 @@ INSERT INTO cidades (id_pais, nome, populacao) VALUES
 (31, 'Fez', 1110000),
 (31, 'Agadir', 421000);
 
+ALTER TABLE paises
+  ADD COLUMN sigla VARCHAR(3) not null;
+
+-- Europa (id_pais 1..6)
+UPDATE paises SET sigla = 'ITA' WHERE id_pais = 1;  -- Itália
+UPDATE paises SET sigla = 'GRC' WHERE id_pais = 2;  -- Grécia
+UPDATE paises SET sigla = 'NOR' WHERE id_pais = 3;  -- Noruega
+UPDATE paises SET sigla = 'BLR' WHERE id_pais = 4;  -- Belarus
+UPDATE paises SET sigla = 'ROU' WHERE id_pais = 5;  -- Romênia
+UPDATE paises SET sigla = 'DEU' WHERE id_pais = 6;  -- Alemanha
+
+-- América do Sul (id_pais 7..11)
+UPDATE paises SET sigla = 'BRA' WHERE id_pais = 7;  -- Brasil
+UPDATE paises SET sigla = 'PER' WHERE id_pais = 8;  -- Peru
+UPDATE paises SET sigla = 'COL' WHERE id_pais = 9;  -- Colômbia
+UPDATE paises SET sigla = 'CHL' WHERE id_pais = 10; -- Chile
+UPDATE paises SET sigla = 'ARG' WHERE id_pais = 11; -- Argentina
+
+-- América do Norte (id_pais 12..16)
+UPDATE paises SET sigla = 'MEX' WHERE id_pais = 12; -- México
+UPDATE paises SET sigla = 'CAN' WHERE id_pais = 13; -- Canadá
+UPDATE paises SET sigla = 'JAM' WHERE id_pais = 14; -- Jamaica
+UPDATE paises SET sigla = 'USA' WHERE id_pais = 15; -- Estados Unidos
+UPDATE paises SET sigla = 'CUB' WHERE id_pais = 16; -- Cuba
+
+-- Ásia (id_pais 17..21)
+UPDATE paises SET sigla = 'BTN' WHERE id_pais = 17; -- Butão
+UPDATE paises SET sigla = 'RUS' WHERE id_pais = 18; -- Rússia
+UPDATE paises SET sigla = 'CHN' WHERE id_pais = 19; -- China
+UPDATE paises SET sigla = 'THA' WHERE id_pais = 20; -- Tailândia
+UPDATE paises SET sigla = 'SAU' WHERE id_pais = 21; -- Arábia Saudita
+
+-- Oceania (id_pais 22..26)
+UPDATE paises SET sigla = 'AUS' WHERE id_pais = 22; -- Austrália
+UPDATE paises SET sigla = 'NZL' WHERE id_pais = 23; -- Nova Zelândia
+UPDATE paises SET sigla = 'FJI' WHERE id_pais = 24; -- Fiji
+UPDATE paises SET sigla = 'PNG' WHERE id_pais = 25; -- Papua Nova Guiné
+UPDATE paises SET sigla = 'NRU' WHERE id_pais = 26; -- Nauru
+
+-- África (id_pais 27..31)
+UPDATE paises SET sigla = 'ZAF' WHERE id_pais = 27; -- África do Sul
+UPDATE paises SET sigla = 'AGO' WHERE id_pais = 28; -- Angola
+UPDATE paises SET sigla = 'EGY' WHERE id_pais = 29; -- Egito
+UPDATE paises SET sigla = 'ETH' WHERE id_pais = 30; -- Etiópia
+UPDATE paises SET sigla = 'MAR' WHERE id_pais = 31; -- Marrocos
+
 select * from paises;
 
 select * from cidades;

@@ -1,6 +1,6 @@
 <?php
 // backend/cidades/listar_cidades.php
-require_once '/../conexao.php';
+require_once '../conexao.php';
 header('Content-Type: application/json; charset=utf-8');
 
 $id_pais = isset($_GET['id_pais']) ? (int)$_GET['id_pais'] : 0;

@@ -1,6 +1,6 @@
 <?php
 // backend/cidades/get_cidade.php
-require_once '/../conexao.php';
+require_once '../conexao.php';
 header('Content-Type: application/json; charset=utf-8');
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;

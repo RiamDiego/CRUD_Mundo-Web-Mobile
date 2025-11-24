@@ -1,33 +1,35 @@
 <?php
 // backend/paises/inserir_pais.php
-require_once '/../conexao.php';
 header('Content-Type: application/json; charset=utf-8');
+require_once '../conexao.php';
 
-// permitir somente POST
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['error' => 'Metodo não permitido']);
-    exit;
-}
-
-// ler campos
+// Pegar dados do POST
 $nome = isset($_POST['nome']) ? trim($_POST['nome']) : '';
-$id_cont = isset($_POST['id_cont']) ? (int)$_POST['id_cont'] : 0;
-$populacao = isset($_POST['populacao']) ? (int)$_POST['populacao'] : 0;
-$idioma = isset($_POST['idioma']) ? trim($_POST['idioma']) : '';
+$id_cont = isset($_POST['id_cont']) ? intval($_POST['id_cont']) : 0;
+$populacao = (isset($_POST['populacao']) && $_POST['populacao'] !== '') ? intval($_POST['populacao']) : null;
+$idioma = isset($_POST['idioma']) ? trim($_POST['idioma']) : null;
+$sigla = isset($_POST['sigla']) ? strtoupper(trim($_POST['sigla'])) : null; // ISO-3
 
-if ($nome === '' || $id_cont <= 0) {
-    http_response_code(400);
-    echo json_encode(['error' => 'Campos obrigatórios faltando']);
+// Validações
+$errors = [];
+if ($nome === '') $errors[] = 'Nome é obrigatório';
+if ($id_cont <= 0) $errors[] = 'Continente inválido';
+if (!empty($sigla) && !preg_match('/^[A-Z]{3}$/', $sigla)) $errors[] = 'Sigla deve ter 3 letras maiúsculas (ex.: BRA)';
+
+if (!empty($errors)) {
+    echo json_encode(['success'=>false,'error'=>implode('; ',$errors)]);
     exit;
 }
 
-try {
-    $stmt = $con->prepare("INSERT INTO paises (nome, id_cont, populacao, idioma) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param('siis', $nome, $id_cont, $populacao, $idioma);
-    $stmt->execute();
-    echo json_encode(['success' => true, 'id_pais' => $stmt->insert_id]);
-} catch (mysqli_sql_exception $e) {
-    http_response_code(500);
-    echo json_encode(['error' => 'Erro ao inserir país']);
+// Inserção com prepared statement (evita SQL injection)
+$stmt = $con->prepare("INSERT INTO paises (nome, id_cont, populacao, idioma, sigla) VALUES (?, ?, ?, ?, ?)");
+$stmt->bind_param('siiss', $nome, $id_cont, $populacao, $idioma, $sigla);
+
+if ($stmt->execute()) {
+    echo json_encode(['success'=>true,'id_pais'=>$stmt->insert_id]);
+} else {
+    echo json_encode(['success'=>false,'error'=>$con->error]);
 }
+$stmt->close();
+$con->close();
+

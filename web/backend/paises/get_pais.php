@@ -1,22 +1,25 @@
 <?php
 // backend/paises/get_pais.php
-require_once '/../conexao.php';
 header('Content-Type: application/json; charset=utf-8');
+require_once '../conexao.php';
 
-$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 if ($id <= 0) {
     http_response_code(400);
-    echo json_encode(['error' => 'ID inválido']);
+    echo json_encode(['error'=>'id inválido']);
     exit;
 }
 
-$stmt = $con->prepare("SELECT id_pais, nome, id_cont, populacao, idioma FROM paises WHERE id_pais = ?");
+$stmt = $con->prepare("SELECT id_pais, nome, id_cont, populacao, idioma, sigla FROM paises WHERE id_pais = ?");
 $stmt->bind_param('i', $id);
 $stmt->execute();
 $res = $stmt->get_result();
-if ($res && $res->num_rows === 1) {
-    echo json_encode($res->fetch_assoc(), JSON_UNESCAPED_UNICODE);
+$row = $res->fetch_assoc();
+if ($row) {
+    echo json_encode($row, JSON_UNESCAPED_UNICODE);
 } else {
     http_response_code(404);
-    echo json_encode(['error' => 'País não encontrado']);
+    echo json_encode(['error'=>'País não encontrado']);
 }
+$stmt->close();
+$con->close();
